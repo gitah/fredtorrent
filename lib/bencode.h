@@ -3,43 +3,45 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include "constants.h"
 
 enum TOKEN_TYPE {
-    BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
-}
+    BE_NONE, BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
+};
 
 class BencodeToken {
 public:
     const char *raw_string;
-    const size_t char_length;
-    const TOKEN_TYPE type;
-}
+    size_t char_length;
+    TOKEN_TYPE type;
+};
 
-class BencodeString : BencodeToken {
+class BencodeString : public BencodeToken {
 public:
     BencodeString(char *content, size_t length);
-    const std::string value;
-}
+    std::string value;
+};
 
-class BencodeInteger : BencodeToken {
+class BencodeInteger : public BencodeToken {
 public:
     BencodeInteger(char *content, size_t length);
     long int value;
-}
+};
 
-class BencodeList : BencodeToken {
+class BencodeList : public BencodeToken {
+public:
     BencodeList(char *content, size_t length);
     std::vector<BencodeToken> value;
-}
+};
 
-class BencodeDictionary : BencodeToken {
-    BencodeInteger(char *content, size_t length);
-    std::map<BencodeString, BencodeToken> value;
-}
+class BencodeDictionary : public BencodeToken {
+public:
+    BencodeDictionary(char *content, size_t length);
+    std::map<std::string, BencodeToken> value;
+};
 
-
-std::vector parseBencode(char *content, size_t length);
+std::vector<BencodeToken> parseBencode(char *content, size_t length);
 
 #endif

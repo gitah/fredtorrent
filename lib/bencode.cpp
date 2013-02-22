@@ -1,5 +1,28 @@
+#include "bencode.h"
+
+/* parses a bencoded string and returns the right token  */
+// TODO: use reference rather than return token straight up ?
+// TODO: get around object slicing problem
+BencodeToken parseBencodeToken(char * content, size_t length) {
+    switch(*content) {
+        case 'i':
+            return BencodeInteger(content, length);
+            break;
+        case 'l':
+            return BencodeList(content, length);
+            break;
+        case 'd':
+            return BencodeDictionary(content, length);
+            break;
+        default:
+           return BencodeString(content, length);
+           break;
+    }
+}
+
 /* parses a bencoded string and returns a list of BencodeTokens  */
 // TODO: use reference rather than return container straight up ?
+// TODO: get around object slicing problem
 std::vector<BencodeToken> parseBencode(char *content, size_t length) {
     char *end = content + length;
     std::vector<BencodeToken> tokList;
@@ -13,27 +36,6 @@ std::vector<BencodeToken> parseBencode(char *content, size_t length) {
     }
 }
 
-/* parses a bencoded string and returns the right token  */
-// TODO: use reference rather than return token straight up ?
-BencodeToken parseBencodeToken(char * content, size_t length) {
-    BencodeToken tok;
-    switch(*content) {
-        case 'i':
-            tok = BencodeInteger(content, length);
-            break;
-        case 'l':
-            tok = BencodeList(content, length);
-            break;
-        case 'd':
-            tok = BencodeDictionary(content, length);
-            break;
-        default:
-           tok = BencodeString(content, length);
-           break;
-    }
-    return tok;
-}
-
 BencodeString::BencodeString(char *content, size_t length) : value() {
     // find out how long the string is
     this->raw_string = content;
@@ -41,17 +43,17 @@ BencodeString::BencodeString(char *content, size_t length) : value() {
     while(*(content + num_size_chars) != ':') {
         num_size_chars++;
     }
-    long int size = strtol(content, content + num_size_chars, 10);
+    std::string s(content, num_size_chars);
+    long int size = atoi(s.c_str());
 
     // skip past the ':' and extract string
-    this->value = std::string(content+2, size);
+    this->value = std::string(content+2, (int)size);
     this->type = BE_STRING;
     this->char_length = num_size_chars + 2 + size;
 }
 
 BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
-    // assert(content[0] == 'i')
-    // assert(content[1] == ':')
+    assert(content[0] == 'i' && content[1] == ':');
     this->raw_string = content;
 
     // jump past the 'i:' tokens
@@ -60,15 +62,15 @@ BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
     while(content[num_int_chars] != 'e') {
         num_int_chars++;
     }
-    this->value = strtol(content, content + num_int_chars, 10);
+    std::string s(content, num_int_chars);
+    long int size = atoi(s.c_str());
     this->type = BE_INTEGER;
     // 2 for 'i:' and 1 for 'e:'
     this->char_length = 2 + num_int_chars + 1;
 }
 
 BencodeList::BencodeList(char *content, size_t length) : value() {
-    // assert(content[0] == 'l')
-    // assert(content[1] == ':')
+    assert(content[0] == 'l' && content[1] == ':');
 
     // jump past the 'l:' tokens
     this->raw_string = content;
@@ -84,22 +86,22 @@ BencodeList::BencodeList(char *content, size_t length) : value() {
     this->char_length = (content - this->raw_string) + 1;
 }
 
-BencodeList::BencodeDictionary(char *content, size_t length) : value() {
-    // assert(content[0] == 'l')
-    // assert(content[1] == ':')
+BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
+    assert(content[0] == 'd' && content[1] == ':');
 
-    // jump past the 'l:' tokens
+    // jump past the 'd:' tokens
     this->raw_string = content;
     content += 2;
-    while(*content != '}') {
-        BencodeString key = (BencodeString)parseBencodeToken(content, length);
+    while(*content != 'e') {
+        BencodeString key = BencodeString(content, length);
         content += key.char_length;
         length -= key.char_length;
-        // assert(tok.type = BE_STRING)
+        assert(key.type = BE_STRING);
+
         BencodeToken val = parseBencodeToken(content, length);
         content += val.char_length;
         length -= val.char_length;
-        this->value.put(key, val);
+        this->value.insert(std::pair<std::string, BencodeToken>(key.value, val));
     }
     this->type = BE_DICT;
     this->char_length = (content - this->raw_string) + 1;
