@@ -1,39 +1,36 @@
 #include "bencode.h"
 
 /* parses a bencoded string and returns the right token  */
-// TODO: use reference rather than return token straight up ?
-// TODO: get around object slicing problem
-BencodeToken parseBencodeToken(char * content, size_t length) {
+BencodeTokenPtr parseBencodeToken(char * content, size_t length) {
     switch(*content) {
         case 'i':
-            return BencodeInteger(content, length);
+            return BencodeTokenPtr(new BencodeInteger(content, length));
             break;
         case 'l':
-            return BencodeList(content, length);
+            return BencodeTokenPtr(new BencodeList(content, length));
             break;
         case 'd':
-            return BencodeDictionary(content, length);
+            return BencodeTokenPtr(new BencodeDictionary(content, length));
             break;
         default:
-           return BencodeString(content, length);
+           return BencodeTokenPtr(new BencodeString(content, length));
            break;
     }
 }
 
 /* parses a bencoded string and returns a list of BencodeTokens  */
-// TODO: use reference rather than return container straight up ?
-// TODO: get around object slicing problem
-std::vector<BencodeToken> parseBencode(char *content, size_t length) {
+std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length) {
     char *end = content + length;
-    std::vector<BencodeToken> tokList;
+    std::vector<BencodeTokenPtr> toks;
 
     // Iterate through each string and create tokens
     while(content < end) {
-        BencodeToken tok = parseBencodeToken(content, length);
-        tokList.push_back(tok);
-        content += tok.char_length;
-        length -= tok.char_length;
+        BencodeTokenPtr tok = parseBencodeToken(content, length);
+        toks.push_back(tok);
+        content += tok->char_length;
+        length -= tok->char_length;
     }
+    return toks;
 }
 
 BencodeString::BencodeString(char *content, size_t length) : value() {
@@ -76,10 +73,10 @@ BencodeList::BencodeList(char *content, size_t length) : value() {
     this->raw_string = content;
     content += 2;
     while(*content != 'e') {
-        BencodeToken tok = parseBencodeToken(content, length);
+        BencodeTokenPtr tok = parseBencodeToken(content, length);
         this->value.push_back(tok);
-        content += tok.char_length;
-        length -= tok.char_length;
+        content += tok->char_length;
+        length -= tok->char_length;
     }
 
     this->type = BE_LIST;
@@ -93,15 +90,16 @@ BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
     this->raw_string = content;
     content += 2;
     while(*content != 'e') {
-        BencodeString key = BencodeString(content, length);
-        content += key.char_length;
-        length -= key.char_length;
-        assert(key.type = BE_STRING);
+        BencodeString key_str = BencodeString(content, length);
+        content += key_str.char_length;
+        length -= key_str.char_length;
+        assert(key_str.type = BE_STRING);
+        std::string key = key_str.value;
 
-        BencodeToken val = parseBencodeToken(content, length);
-        content += val.char_length;
-        length -= val.char_length;
-        this->value.insert(std::pair<std::string, BencodeToken>(key.value, val));
+        BencodeTokenPtr val = parseBencodeToken(content, length);
+        content += val->char_length;
+        length -= val->char_length;
+        this->value.insert(std::pair<std::string, BencodeTokenPtr>(key, val));
     }
     this->type = BE_DICT;
     this->char_length = (content - this->raw_string) + 1;

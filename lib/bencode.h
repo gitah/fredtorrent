@@ -5,6 +5,9 @@
 #include <vector>
 #include <map>
 #include <cstdlib>
+
+#include <boost/shared_ptr.hpp>
+
 #include "constants.h"
 
 enum TOKEN_TYPE {
@@ -17,6 +20,8 @@ public:
     size_t char_length;
     TOKEN_TYPE type;
 };
+
+typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
 
 class BencodeString : public BencodeToken {
 public:
@@ -33,15 +38,15 @@ public:
 class BencodeList : public BencodeToken {
 public:
     BencodeList(char *content, size_t length);
-    std::vector<BencodeToken> value;
+    std::vector<BencodeTokenPtr> value;
 };
 
 class BencodeDictionary : public BencodeToken {
 public:
     BencodeDictionary(char *content, size_t length);
-    std::map<std::string, BencodeToken> value;
+    std::map<std::string, BencodeTokenPtr> value;
 };
 
-std::vector<BencodeToken> parseBencode(char *content, size_t length);
-
+BencodeTokenPtr parseBencodeToken(char * content, size_t length);
+std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length);
 #endif
