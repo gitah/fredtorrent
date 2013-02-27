@@ -26,15 +26,16 @@ have a commandline program that can succesfuly download Ubuntu via BitTorrent:
 
 # TODO
 2. create Bencode class
-
 3. create MetaInfoFile class
-
-4. create BTSession class
+4. create BTSession class (top class encompassing everything)
 
 5. Finish TrackerConnection class
 5. Create Peer, PeerList classes
+5. Create BTFile, PieceManager classes
+    - which pieces I already have
+    - who has which piece
+    - frequency of pieces
 
-6. create BTFile class
 6. create PeerConnection class
     - handshake, keep-alive, choke, unchoke, interested, uninterested
     - have, request, piece
