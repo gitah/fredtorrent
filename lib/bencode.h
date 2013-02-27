@@ -11,7 +11,7 @@
 #include "constants.h"
 
 enum TOKEN_TYPE {
-    BE_NONE, BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
+    BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
 };
 
 class BencodeToken {
@@ -23,6 +23,7 @@ public:
 
 typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
 
+// TODO: support unicode (decode UTF-8)
 class BencodeString : public BencodeToken {
 public:
     BencodeString(char *content, size_t length);

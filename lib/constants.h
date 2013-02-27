@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <cassert>
+#include <iostream>
 
 #define BT_UA "fredtorrent"
 

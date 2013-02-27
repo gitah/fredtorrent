@@ -5,17 +5,18 @@ BencodeTokenPtr parseBencodeToken(char * content, size_t length) {
     switch(*content) {
         case 'i':
             return BencodeTokenPtr(new BencodeInteger(content, length));
-            break;
         case 'l':
             return BencodeTokenPtr(new BencodeList(content, length));
-            break;
         case 'd':
             return BencodeTokenPtr(new BencodeDictionary(content, length));
-            break;
         default:
-           return BencodeTokenPtr(new BencodeString(content, length));
-           break;
+           if(*content > '0' && *content <= '9') {
+               return BencodeTokenPtr(new BencodeString(content, length));
+           } else {
+               break;
+           }
     }
+    return boost::shared_ptr<BencodeToken>();
 }
 
 /* parses a bencoded string and returns a list of BencodeTokens  */
@@ -45,8 +46,9 @@ BencodeString::BencodeString(char *content, size_t length) : value() {
 
     // skip past the ':' and extract string
     this->value = std::string(content+2, (int)size);
+    //std::cout <<  "s: " << this->value << std::endl;
     this->type = BE_STRING;
-    this->char_length = num_size_chars + 2 + size;
+    this->char_length = num_size_chars + 1 + size;
 }
 
 BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
@@ -60,19 +62,20 @@ BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
         num_int_chars++;
     }
     std::string s(content, num_int_chars);
-    long int size = atoi(s.c_str());
+
+    this->value = atoi(s.c_str());
     this->type = BE_INTEGER;
     // 2 for 'i:' and 1 for 'e:'
     this->char_length = 2 + num_int_chars + 1;
 }
 
 BencodeList::BencodeList(char *content, size_t length) : value() {
-    assert(content[0] == 'l' && content[1] == ':');
+    assert(*content == 'l');
 
-    // jump past the 'l:' tokens
     this->raw_string = content;
-    content += 2;
+    content += 1; // jump past the 'l' char
     while(*content != 'e') {
+        //std::cout <<  "l: " << *content << std::endl;
         BencodeTokenPtr tok = parseBencodeToken(content, length);
         this->value.push_back(tok);
         content += tok->char_length;
@@ -84,16 +87,16 @@ BencodeList::BencodeList(char *content, size_t length) : value() {
 }
 
 BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
-    assert(content[0] == 'd' && content[1] == ':');
+    assert(*content == 'd');
 
-    // jump past the 'd:' tokens
     this->raw_string = content;
-    content += 2;
+    content += 1; // jump past the 'd' char
     while(*content != 'e') {
+        //std::cout <<  "d: " << *content << std::endl;
         BencodeString key_str = BencodeString(content, length);
         content += key_str.char_length;
         length -= key_str.char_length;
-        assert(key_str.type = BE_STRING);
+        assert(key_str.type == BE_STRING);
         std::string key = key_str.value;
 
         BencodeTokenPtr val = parseBencodeToken(content, length);
