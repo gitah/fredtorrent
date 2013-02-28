@@ -26,9 +26,12 @@ std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length) {
 
     // Iterate through each string and create tokens
     while(content < end) {
+        //std::cout << "c1: " << *content << std::endl;
         BencodeTokenPtr tok = parseBencodeToken(content, length);
         toks.push_back(tok);
+        //std::cout << "tok_len: " << tok->char_length << std::endl;
         content += tok->char_length;
+        //std::cout << "c2: " << *content << std::endl;
         length -= tok->char_length;
     }
     return toks;
@@ -37,18 +40,23 @@ std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length) {
 BencodeString::BencodeString(char *content, size_t length) : value() {
     // find out how long the string is
     this->raw_string = content;
-    int num_size_chars = 0;
-    while(*(content + num_size_chars) != ':') {
-        num_size_chars++;
+    int str_size_chars = 0;
+    while(*(content + str_size_chars) != ':') {
+        str_size_chars++;
     }
-    std::string s(content, num_size_chars);
-    long int size = atoi(s.c_str());
+    std::string s(content, str_size_chars);
+    long int str_chars = atoi(s.c_str());
 
-    // skip past the ':' and extract string
-    this->value = std::string(content+2, (int)size);
+    // skip past the '<size>:' and extract string
+    content += str_size_chars + 1;
+    this->value = std::string(content, (int)str_chars);
     //std::cout <<  "s: " << this->value << std::endl;
     this->type = BE_STRING;
-    this->char_length = num_size_chars + 1 + size;
+    this->char_length = str_size_chars + 1 + str_chars;
+}
+
+std::string BencodeString::get_value(BencodeTokenPtr ptr) {
+    return ((BencodeString *)ptr.get())->value;
 }
 
 BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
@@ -69,6 +77,10 @@ BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
     this->char_length = 2 + num_int_chars + 1;
 }
 
+long int BencodeInteger::get_value(BencodeTokenPtr ptr) {
+    return ((BencodeInteger *)ptr.get())->value;
+}
+
 BencodeList::BencodeList(char *content, size_t length) : value() {
     assert(*content == 'l');
 
@@ -84,6 +96,10 @@ BencodeList::BencodeList(char *content, size_t length) : value() {
 
     this->type = BE_LIST;
     this->char_length = (content - this->raw_string) + 1;
+}
+
+std::vector<BencodeTokenPtr> BencodeList::get_value(BencodeTokenPtr ptr) {
+    return ((BencodeList *)ptr.get())->value;
 }
 
 BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
@@ -106,4 +122,8 @@ BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
     }
     this->type = BE_DICT;
     this->char_length = (content - this->raw_string) + 1;
+}
+
+std::map<std::string, BencodeTokenPtr> BencodeDictionary::get_value(BencodeTokenPtr ptr) {
+    return ((BencodeDictionary *)ptr.get())->value;
 }

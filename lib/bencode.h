@@ -28,24 +28,36 @@ class BencodeString : public BencodeToken {
 public:
     BencodeString(char *content, size_t length);
     std::string value;
+
+    // extracts value from a BencodeTokenPtr
+    static std::string get_value(BencodeTokenPtr ptr);
 };
 
 class BencodeInteger : public BencodeToken {
 public:
     BencodeInteger(char *content, size_t length);
     long int value;
+
+    // extracts value from a BencodeTokenPtr
+    static long int get_value(BencodeTokenPtr ptr);
 };
 
 class BencodeList : public BencodeToken {
 public:
     BencodeList(char *content, size_t length);
     std::vector<BencodeTokenPtr> value;
+
+    // extracts value from a BencodeTokenPtr
+    static std::vector<BencodeTokenPtr> get_value(BencodeTokenPtr ptr);
 };
 
 class BencodeDictionary : public BencodeToken {
 public:
     BencodeDictionary(char *content, size_t length);
     std::map<std::string, BencodeTokenPtr> value;
+
+    // extracts value from a BencodeTokenPtr
+    static std::map<std::string, BencodeTokenPtr> get_value(BencodeTokenPtr ptr);
 };
 
 BencodeTokenPtr parseBencodeToken(char * content, size_t length);
