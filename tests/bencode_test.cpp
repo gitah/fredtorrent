@@ -8,7 +8,7 @@
 
 void test_bencode_string() {
     char tok[] = "3:foo";
-    std::vector<BencodeTokenPtr> lst = parseBencode(tok, strlen(tok));
+    std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
     assert(lst.size() == 1);
     assert(lst[0]->type == BE_STRING);
 
@@ -18,7 +18,7 @@ void test_bencode_string() {
 
 void test_bencode_integer() {
     char tok[] = "i:200e";
-    std::vector<BencodeTokenPtr> lst = parseBencode(tok, strlen(tok));
+    std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
 
     assert(lst.size() == 1);
     assert(lst[0]->type == BE_INTEGER);
@@ -29,7 +29,7 @@ void test_bencode_integer() {
 
 void test_bencode_list() {
     char tok[] = "l4:spam4:eggse";
-    std::vector<BencodeTokenPtr> lst = parseBencode(tok, strlen(tok));
+    std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
     assert(lst.size() == 1);
     assert(lst[0]->type == BE_LIST);
 
@@ -42,7 +42,7 @@ void test_bencode_list() {
 
 void test_bencode_dict() {
     char tok[] = "d3:cow3:moo4:spam4:eggse";
-    std::vector<BencodeTokenPtr> lst = parseBencode(tok, strlen(tok));
+    std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
     assert(lst.size() == 1);
     assert(lst[0]->type == BE_DICT);
 
@@ -56,7 +56,7 @@ void test_bencode_composite() {
     char tok[] = "3:bari:2eli:3eed3:cow3:mooe";
 
     // we expect [<BE_STRING>, <BE_INTEGER>, <BE_LIST>, <BE_DICT>]
-    std::vector<BencodeTokenPtr> lst = parseBencode(tok, strlen(tok));
+    std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
     //std::cout << "foo " << lst.size() << std::endl;
     assert(lst.size() == 4);
     assert(lst[0]->type == BE_STRING);

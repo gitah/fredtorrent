@@ -10,6 +10,9 @@
 
 #include "constants.h"
 
+class BencodeToken;
+typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
+
 enum TOKEN_TYPE {
     BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
 };
@@ -19,9 +22,12 @@ public:
     const char *raw_string;
     size_t char_length;
     TOKEN_TYPE type;
+
+
+    static BencodeTokenPtr parseBencodeToken(char * content, size_t length);
+    static std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length);
 };
 
-typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
 
 // TODO: support unicode (decode UTF-8)
 class BencodeString : public BencodeToken {
@@ -60,6 +66,4 @@ public:
     static std::map<std::string, BencodeTokenPtr> get_value(BencodeTokenPtr ptr);
 };
 
-BencodeTokenPtr parseBencodeToken(char * content, size_t length);
-std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length);
 #endif

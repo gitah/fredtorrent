@@ -1,7 +1,7 @@
 #include "bencode.h"
 
-/* parses a bencoded string and returns the right token  */
-BencodeTokenPtr parseBencodeToken(char * content, size_t length) {
+/* parses a bencoded string and returns the first token  */
+BencodeTokenPtr BencodeToken::parseBencodeToken(char * content, size_t length) {
     switch(*content) {
         case 'i':
             return BencodeTokenPtr(new BencodeInteger(content, length));
@@ -20,14 +20,14 @@ BencodeTokenPtr parseBencodeToken(char * content, size_t length) {
 }
 
 /* parses a bencoded string and returns a list of BencodeTokens  */
-std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length) {
+std::vector<BencodeTokenPtr> BencodeToken::parseBencode(char *content, size_t length) {
     char *end = content + length;
     std::vector<BencodeTokenPtr> toks;
 
     // Iterate through each string and create tokens
     while(content < end) {
         //std::cout << "c1: " << *content << std::endl;
-        BencodeTokenPtr tok = parseBencodeToken(content, length);
+        BencodeTokenPtr tok = BencodeToken::parseBencodeToken(content, length);
         toks.push_back(tok);
         //std::cout << "tok_len: " << tok->char_length << std::endl;
         content += tok->char_length;
@@ -88,7 +88,7 @@ BencodeList::BencodeList(char *content, size_t length) : value() {
     content += 1; // jump past the 'l' char
     while(*content != 'e') {
         //std::cout <<  "l: " << *content << std::endl;
-        BencodeTokenPtr tok = parseBencodeToken(content, length);
+        BencodeTokenPtr tok = BencodeToken::parseBencodeToken(content, length);
         this->value.push_back(tok);
         content += tok->char_length;
         length -= tok->char_length;
@@ -115,7 +115,7 @@ BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
         assert(key_str.type == BE_STRING);
         std::string key = key_str.value;
 
-        BencodeTokenPtr val = parseBencodeToken(content, length);
+        BencodeTokenPtr val = BencodeToken::parseBencodeToken(content, length);
         content += val->char_length;
         length -= val->char_length;
         this->value.insert(std::pair<std::string, BencodeTokenPtr>(key, val));
