@@ -7,6 +7,9 @@
 
 #define BT_UA "fredtorrent"
 
+#define SHA1_LEN 20
+
 typedef uint32_t BT_ID;
+
 
 #endif
