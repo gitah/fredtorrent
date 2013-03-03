@@ -85,7 +85,24 @@ FileInfo::FileInfo(std::string name, int length) : name(name), length(length) {}
 
 
 std::vector<FileInfo> parse_single(std::string name, int length) {
+    std::vector out;
+    out.push_back(FileInfo(name, length));
+    return out;
 }
 
 std::vector<FileInfo> parse_multiple(std::vector<BencodeTokenPtr> &file_dicts) {
+    std::vector out;
+    for(int i=0; i<file_dicts.size(); i++) {
+         std::map<std::string, BencodeTokenPtr> file_dict =
+             BencodeDictionary::get_value(file_dicts[i]);
+         int length = BencodeString::get_value(file_dict["length"]);
+         std::vector<BencodeTokenPtr> path_list = BencodeList::get_value(file_dict["path"]);
+         std::string name = "";
+         for(int j=0; j<path_list.size(); j++) {
+             name.append(BencodeString::get_value(path_list[i]));
+             name.append("/");
+         }
+        out.push_back(FileInfo(name, length));
+    }
+    return out;
 }
