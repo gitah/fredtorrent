@@ -26,12 +26,12 @@ std::vector<BencodeTokenPtr> BencodeToken::parseBencode(char *content, size_t le
 
     // Iterate through each string and create tokens
     while(content < end) {
-        //std::cout << "c1: " << *content << std::endl;
+        std::cout << "c1: " << *content << std::endl;
         BencodeTokenPtr tok = BencodeToken::parseBencodeToken(content, length);
         toks.push_back(tok);
-        //std::cout << "tok_len: " << tok->char_length << std::endl;
+        std::cout << "tok_len: " << tok->char_length << std::endl;
         content += tok->char_length;
-        //std::cout << "c2: " << *content << std::endl;
+        std::cout << "c2: " << *content << std::endl;
         length -= tok->char_length;
     }
     return toks;
@@ -60,11 +60,11 @@ std::string BencodeString::get_value(BencodeTokenPtr ptr) {
 }
 
 BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
-    assert(content[0] == 'i' && content[1] == ':');
+    assert(content[0] == 'i');
     this->raw_string = content;
 
-    // jump past the 'i:' tokens
-    content += 2;
+    // jump past the 'i' token
+    content += 1;
     size_t num_int_chars = 0;
     while(content[num_int_chars] != 'e') {
         num_int_chars++;
@@ -73,8 +73,8 @@ BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
 
     this->value = atoi(s.c_str());
     this->type = BE_INTEGER;
-    // 2 for 'i:' and 1 for 'e:'
-    this->char_length = 2 + num_int_chars + 1;
+    // 1 for 'i' and 1 for 'e'
+    this->char_length = 1 + num_int_chars + 1;
 }
 
 long int BencodeInteger::get_value(BencodeTokenPtr ptr) {
@@ -108,7 +108,7 @@ BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
     this->raw_string = content;
     content += 1; // jump past the 'd' char
     while(*content != 'e') {
-        //std::cout <<  "d: " << *content << std::endl;
+        std::cout <<  "d: " << *content << std::endl;
         BencodeString key_str = BencodeString(content, length);
         content += key_str.char_length;
         length -= key_str.char_length;

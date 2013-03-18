@@ -17,7 +17,7 @@ void test_bencode_string() {
 }
 
 void test_bencode_integer() {
-    char tok[] = "i:200e";
+    char tok[] = "i200e";
     std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));
 
     assert(lst.size() == 1);
@@ -53,7 +53,7 @@ void test_bencode_dict() {
 }
 
 void test_bencode_composite() {
-    char tok[] = "3:bari:2eli:3eed3:cow3:mooe";
+    char tok[] = "3:bari2eli3eed3:cow3:mooe";
 
     // we expect [<BE_STRING>, <BE_INTEGER>, <BE_LIST>, <BE_DICT>]
     std::vector<BencodeTokenPtr> lst = BencodeToken::parseBencode(tok, strlen(tok));

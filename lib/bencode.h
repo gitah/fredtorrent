@@ -8,10 +8,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "constants.h"
-
-class BencodeToken;
-typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
+#include "common.h"
 
 enum TOKEN_TYPE {
     BE_STRING, BE_INTEGER, BE_LIST, BE_DICT
