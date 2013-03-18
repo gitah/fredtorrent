@@ -7,7 +7,9 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
-#define BT_UA "fredtorrent"
+#define BT_UA "fredtorrent-1.0"
+#define CLIENT_PORT 6885
+#define TRACKER_PORT 80
 
 #define SHA1_LEN 20
 

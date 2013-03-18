@@ -39,11 +39,15 @@ class MetaInfo {
 public:
     MetaInfo(std::string path);
 
+
     // returns whether or not metainfo file was successfully parsed
     bool valid();
 
     // number of bytes in each piece
     int piece_length;
+
+    // SHA1 hash of the info for the tracker
+    char info_hash[SHA1_LEN]; // TODO
 
     // hashes for each piece
     std::vector<PieceInfo> pieces;
