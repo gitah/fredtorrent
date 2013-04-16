@@ -2,18 +2,15 @@
 
 using namespace std;
 
-int init_connection(string dst_ip, int dst_port) {
+/*--- Init TCP sockets ---*/
+// creates a TCP connection to the given address to send data to
+// returns the socket descriptor if succesful otherwise NULL
+int init_outgoing_connection(string dst_ip, int dst_port) {
     // create TCP socket
     int sockfd = 0;
     if((sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
         return 0;
     }
-
-    //set socket to be reusable
-    //int yes = 1;
-    //if (setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
-        //return 0;
-    //}
 
     // create `struct sockaddr` for the peer address
     struct sockaddr_in peer_addr;
@@ -30,6 +27,44 @@ int init_connection(string dst_ip, int dst_port) {
     return sockfd;
 }
 
+// creates a TCP socket that listens to the given port
+// returns the socket descriptor if succesful otherwise NULL
+int init_incoming_connection(int dst_port) {
+    // get local address
+    struct addrinfo *hints, *resp;
+    hints = (struct addrinfo*)malloc(sizeof(struct addrinfo));
+
+    memset(hints, 0, sizeof(struct addrinfo));
+    hints->ai_family = AF_UNSPEC;
+    hints->ai_socktype = SOCK_STREAM;
+    hints->ai_flags = AI_PASSIVE;
+    
+    string port_str = to_string(dst_port);
+    if(getaddrinfo(NULL, port_str.c_str(), hints, &resp) != 0) {
+        return 0;
+    }
+    
+    // create socket
+    int sockfd = 0;
+    if((sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+        return 0;
+    }
+    
+    //set socket to be reusable
+    int yes = 1;
+    if (setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
+        return 0;
+    }
+
+    // bind to port
+    if(bind(sockfd, resp->ai_addr, resp->ai_addrlen) == -1) {
+        return 0;
+    }
+
+    return sockfd;
+}
+
+/*--- Send Messages ---*/
 bool send_handshake(int sockfd, std::string peer_id, std::string info_hash) {
     // handshake: <pstrlen><pstr><reserved><info_hash><peer_id>
     uint8_t msg[HANDSHAKE_MSG_SIZE];
@@ -128,12 +163,56 @@ bool send_uninterested(int sockfd) {
     return true;
 }
 
+
+// bitfield: <len=0001+X><id=5><bitfield>
+
 /*-- piece available messages --*/
-bool send_have(int sockfd) {
-    return false;
+bool send_have(int sockfd, uint32_t index) {
+    // have: <len=0005><id=4><piece index>
+    int msg_size = LENGTH_PREFIX_SIZE + HAVE_MSG_SIZE;
+    uint8_t msg[msg_size];
+
+    // MESSAGE LENGTH
+    *((uint32_t *)offset) =  htonl(HAVE_MSG_SIZE);
+    offset += sizeof(uint32_t);
+
+    // MSG ID
+    *(offset) = HAVE_MSG_ID;
+    offset += 1;
+
+    // PIECE INDEX
+    *((uint32_t *)offset) =  htonl(index);
+    offset += sizeof(uint32_t);
+
+    // send message
+    if(send(sockfd, msg, msg_size, 0) == -1) {
+        return false;
+    }
+    return true;
 }
-bool send_bitfield(int sockfd) {
-    return false;
+
+
+bool send_bitfield(int sockfd, uint8_t *bitfield, size_t bitfield_len) {
+    //bitfield: <len=0001+X><id=5><bitfield>
+    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE + bitfield_len;
+    uint8_t msg[msg_size];
+
+    // MESSAGE LENGTH
+    *((uint32_t *)offset) =  htonl(MSG_ID_SIZE + bitfield_len);
+    offset += sizeof(uint32_t);
+
+    // MSG ID
+    *(offset) = HAVE_MSG_ID;
+    offset += 1;
+
+    // BITFIELD
+    memcpy(offset, bitfield, bitfield_len);
+
+    // send message
+    if(send(sockfd, msg, msg_size, 0) == -1) {
+        return false;
+    }
+    return true;
 }
 
 /*-- piece transfer messages --*/
@@ -209,3 +288,4 @@ bool send_piece(int sockfd, uint32_t index, uint32_t begin, const char *data, si
     }
     return true;
 }
+

@@ -28,25 +28,20 @@ private:
     std::string ip;
     int port;
 
+    bool handshaked;
+
     bool client_choking;
     bool client_interested;
     bool peer_choking;
     bool peer_interested;
-
-    // keep track of pieces
-    boost::dynamic_bitset pieces;
-    int num_pieces;
 };
 
 // Manages known peers in the swarm
 class PeerManager {
 public:
-    PeerManager(std::vector<Peer> peer_list);
+    PeerManager();
 
-    // TODO: piece manager ??
-
-    // adds peer to peer manager
-    void handle_handshake(std::string peer_id, std::string ip, int port);
+    void add_peer(std::string peer_id, std::string ip, int port);
 
     void handle_choke(std::string peer_id);
     void handle_unchoke(std::string peer_id);
@@ -54,12 +49,8 @@ public:
     void handle_interested(std::string peer_id);
     void handle_uninterested(std::string peer_id);
 
-    void handle_have(std::string peer_id, int piece_id);
-    void handle_bitfield(std::string peer_id, unsigned long bitfield, size_t n);
-
-private:
-    std::map<std::string, Peer> mPeers;
-    std::vector<Peer> mActivePeers;
+    std::map<int, Peer> mConnectedPeers;
+    std::vector<std::string> peers;
 };
 
 #endif

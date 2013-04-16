@@ -19,6 +19,8 @@
 #define SHA1_LEN 20
 #define PEER_ID_LEN 20
 
+#define MAX_ACTIVE_PEER_CONN 5
+
 typedef uint32_t BT_ID;
 
 // forward declarations

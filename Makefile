@@ -1,7 +1,11 @@
+main: bin/btsession.o
+	g++ bin/peerwire.o bin/piece.o bin/tracker.o bin/peer.o bin/metainfo.o bin/bencode.o bin/btsession.o -lcurl -o ./a.out
+	#./a.out
+
 test_peerwire: bin/peerwire.o
 	g++ -I./lib -g -c tests/peerwire_test.cpp -o bin/peerwire_test.o
 	g++ bin/peerwire.o bin/peerwire_test.o -o ./a.out
-	#./a.out
+	./a.out
 
 test_tracker: bin/tracker.o
 	g++ -I./lib -g -c tests/tracker_test.cpp -o bin/tracker_test.o
@@ -18,11 +22,14 @@ test_bencode: bin/bencode.o
 	g++ bin/bencode_test.o bin/bencode.o -o ./a.out
 	./a.out
 
+bin/btsession.o: lib/btsession.cpp bin/piece.o bin/peerwire.o bin/tracker.o bin/metainfo.o | bin
+	g++ -g -c lib/btsession.cpp -o bin/btsession.o
+
 bin/peerwire.o: lib/peerwire.cpp | bin
 	g++ -g -c lib/peerwire.cpp -o bin/peerwire.o
 
-bin/btsession.o: lib/btsession.cpp bin/tracker.o bin/metainfo.o | bin
-	g++ -g -c lib/btsession.cpp -o bin/btsession.o
+bin/piece.o: lib/piece.cpp | bin
+	g++ -g -c lib/piece.cpp -o bin/piece.o
 
 bin/tracker.o: lib/tracker.cpp bin/peer.o bin/metainfo.o | bin
 	g++ -g -c lib/tracker.cpp -o bin/tracker.o

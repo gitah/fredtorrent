@@ -35,7 +35,7 @@ void test_piece(int sockfd) {
 int main() {
     string dst_ip("127.0.0.1");
     int dst_port = 9999;
-    int sockfd = init_connection(dst_ip, dst_port);
+    int sockfd = init_outgoing_connection(dst_ip, dst_port);
     assert(sockfd > 0);
 
     test_choke(sockfd);
