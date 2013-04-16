@@ -21,15 +21,15 @@ public:
     TOKEN_TYPE type;
 
 
-    static BencodeTokenPtr parseBencodeToken(char * content, size_t length);
-    static std::vector<BencodeTokenPtr> parseBencode(char *content, size_t length);
+    static BencodeTokenPtr parseBencodeToken(const char * content, size_t length);
+    static std::vector<BencodeTokenPtr> parseBencode(const char *content, size_t length);
 };
 
 
 // TODO: support unicode (decode UTF-8)
 class BencodeString : public BencodeToken {
 public:
-    BencodeString(char *content, size_t length);
+    BencodeString(const char *content, size_t length);
     std::string value;
 
     // extracts value from a BencodeTokenPtr
@@ -38,7 +38,7 @@ public:
 
 class BencodeInteger : public BencodeToken {
 public:
-    BencodeInteger(char *content, size_t length);
+    BencodeInteger(const char *content, size_t length);
     long int value;
 
     // extracts value from a BencodeTokenPtr
@@ -47,7 +47,7 @@ public:
 
 class BencodeList : public BencodeToken {
 public:
-    BencodeList(char *content, size_t length);
+    BencodeList(const char *content, size_t length);
     std::vector<BencodeTokenPtr> value;
 
     // extracts value from a BencodeTokenPtr
@@ -56,7 +56,7 @@ public:
 
 class BencodeDictionary : public BencodeToken {
 public:
-    BencodeDictionary(char *content, size_t length);
+    BencodeDictionary(const char *content, size_t length);
     std::map<std::string, BencodeTokenPtr> value;
 
     // extracts value from a BencodeTokenPtr

@@ -10,22 +10,23 @@
 
 #include "common.h"
 
-
 // Represents a Peer
 class Peer {
 public:
-    static Peer parse(map<std::string, BencodeTokenPtr> peer_dict);
-    string peer_id;
+    static Peer parse(std::map<std::string, BencodeTokenPtr> peer_dict);
+    std::string peer_id;
     // peer's IP address either IPv6 (hexed) or IPv4 (dotted quad) or DNS name (string)
-    string ip;
+    std::string ip;
     int port;
 };
 
 // Manages known peers in the swarm
 class PeerManager {
 public:
-    std::vector<Peer> peer_list;
-    std::vector<Peer> active_peers;
+    PeerManager(std::vector<Peer> peer_list);
+private:
+    std::vector<Peer> mPeerList;
+    std::vector<Peer> mActivePeers;
 };
 
 #endif

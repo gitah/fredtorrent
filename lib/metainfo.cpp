@@ -92,7 +92,6 @@ FileInfo::FileInfo(std::string name, int length) : name(name), length(length) {}
 
 
 std::vector<FileInfo> FileInfo::parse_single(std::string name, int length) {
-    std::cout << "foobar" << std::endl;
     std::vector<FileInfo> out;
     out.push_back(FileInfo(name, length));
     return out;

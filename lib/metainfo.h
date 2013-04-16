@@ -60,6 +60,7 @@ public:
     std::vector<FileInfo> files;
 
     // url for tracker
+    // TODO: extract port from url
     std::string tracker_url;
 
 private:

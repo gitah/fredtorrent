@@ -1,7 +1,7 @@
 #include "bencode.h"
 
 /* parses a bencoded string and returns the first token  */
-BencodeTokenPtr BencodeToken::parseBencodeToken(char * content, size_t length) {
+BencodeTokenPtr BencodeToken::parseBencodeToken(const char * content, size_t length) {
     switch(*content) {
         case 'i':
             return BencodeTokenPtr(new BencodeInteger(content, length));
@@ -20,8 +20,8 @@ BencodeTokenPtr BencodeToken::parseBencodeToken(char * content, size_t length) {
 }
 
 /* parses a bencoded string and returns a list of BencodeTokens  */
-std::vector<BencodeTokenPtr> BencodeToken::parseBencode(char *content, size_t length) {
-    char *end = content + length;
+std::vector<BencodeTokenPtr> BencodeToken::parseBencode(const char *content, size_t length) {
+    const char *end = content + length;
     std::vector<BencodeTokenPtr> toks;
 
     // Iterate through each string and create tokens
@@ -34,7 +34,7 @@ std::vector<BencodeTokenPtr> BencodeToken::parseBencode(char *content, size_t le
     return toks;
 }
 
-BencodeString::BencodeString(char *content, size_t length) : value() {
+BencodeString::BencodeString(const char *content, size_t length) : value() {
     // find out how long the string is
     this->raw_string = content;
     int str_size_chars = 0;
@@ -55,7 +55,7 @@ std::string BencodeString::get_value(BencodeTokenPtr ptr) {
     return ((BencodeString *)ptr.get())->value;
 }
 
-BencodeInteger::BencodeInteger(char *content, size_t length) : value() {
+BencodeInteger::BencodeInteger(const char *content, size_t length) : value() {
     assert(content[0] == 'i');
     this->raw_string = content;
 
@@ -77,7 +77,7 @@ long int BencodeInteger::get_value(BencodeTokenPtr ptr) {
     return ((BencodeInteger *)ptr.get())->value;
 }
 
-BencodeList::BencodeList(char *content, size_t length) : value() {
+BencodeList::BencodeList(const char *content, size_t length) : value() {
     assert(*content == 'l');
 
     this->raw_string = content;
@@ -97,7 +97,7 @@ std::vector<BencodeTokenPtr> BencodeList::get_value(BencodeTokenPtr ptr) {
     return ((BencodeList *)ptr.get())->value;
 }
 
-BencodeDictionary::BencodeDictionary(char *content, size_t length) : value() {
+BencodeDictionary::BencodeDictionary(const char *content, size_t length) : value() {
     assert(*content == 'd');
 
     this->raw_string = content;
