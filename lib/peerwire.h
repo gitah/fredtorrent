@@ -5,7 +5,6 @@
  * */
 
 #include <string>
-#include <bitset>
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -19,7 +18,7 @@
 #define PEERWIRE_H
 
 
-#define PSTR 'BitTorrent protocol'
+#define PSTR "BitTorrent protocol"
 #define PSTRLEN 19
 #define REQUEST_MSG_BLOCK_LEN (1 << 14)
 
@@ -59,7 +58,7 @@ bool send_have(int sockfd);
 bool send_bitfield(int sockfd);
 
 // send messages to request and get data
-bool send_request(int sockfd);
-bool send_piece(int sockfd);
+bool send_request(int sockfd, uint32_t index, uint32_t begin);
+bool send_piece(int sockfd, uint32_t index, uint32_t begin, const char *data, size_t n);
 
 #endif
