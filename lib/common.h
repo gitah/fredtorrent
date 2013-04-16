@@ -29,7 +29,7 @@ typedef boost::shared_ptr<BencodeToken> BencodeTokenPtr;
 
 
 // convert integer to string
-inline std::string to_string(int num) {   
+inline std::string to_string(int num) {
     std::stringstream ss;
     ss << num;
     return ss.str();

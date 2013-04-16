@@ -57,12 +57,12 @@ bool TrackerConnection::interval_expired() {
 /* sends an HTTP request to the tracker and returns the response */
 TrackerResponse TrackerConnection::send_request(TrackerRequest req, string event) {
     // build query string from TrackerRequest
-    string query_str = string("?") + 
+    string query_str = string("?") +
         string("info_hash=") + req.info_hash +
         string("&peer_id=") + req.peer_id +
         string("&port=") + to_string(req.client_port) +
-        string("&uploaded=") + to_string(req.uploaded) + 
-        string("&downloaded=") + to_string(req.downloaded) + 
+        string("&uploaded=") + to_string(req.uploaded) +
+        string("&downloaded=") + to_string(req.downloaded) +
         string("&left=") + to_string(req.left) +
         string("&compact=0");
     if(!req.tracker_id.empty()) {
@@ -97,7 +97,7 @@ TrackerResponse TrackerConnection::send_request(TrackerRequest req, string event
         resp.failure_reason = "Could create CURL handle";
         return resp;
     }
- 
+
     // parse and return TrackerResponse
     vector<BencodeTokenPtr> toks = BencodeToken::parseBencode(response.c_str(), response.length());
     assert(toks.size() == 1);

@@ -6,7 +6,7 @@ using namespace std;
 /*=== Peer ===*/
 Peer::Peer(string pid, string ip, int port) :
     peer_id(pid), ip(ip), port(port),
-    client_choking(false), client_interested(false), 
+    client_choking(false), client_interested(false),
     peer_interested(false), peer_choking(false) {
     pieces = NULL;
 }
@@ -89,7 +89,7 @@ void PeerManager::handle_bitfield(std::string peer_id, unsigned long bitfield, s
     if(mPeers[peer_id].pieces == NULL) {
         return;
     }
-    
+
     Peer& peer = mPeers[peer_id];
 
     // TODO: move num_pieces to piece manager or btsession

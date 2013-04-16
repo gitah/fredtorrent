@@ -74,11 +74,11 @@ public:
 
     // If present, then no other keys may be present. The value is a
     // human-readable error message as to why the request failed (string).
-    std::string failure_reason; 
+    std::string failure_reason;
 
     // seconds that the client should wait between sending
     // regular requests to the tracker
-    int interval; 
+    int interval;
 
     //A string that the client should send back on its next announcements. If
     //absent and a previous announce sent a tracker id, do not discard the old

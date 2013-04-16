@@ -13,7 +13,7 @@ void BTSession::BTSession(string metainfo_file) {
 }
 
 /* sends a request to tracker and updates state information based on tracker
- * response 
+ * response
  *
  * returns true if success otherwise false
  * */

@@ -1,6 +1,6 @@
 /* peerwire.h
  *
- * Contains functions to send peerwire messages 
+ * Contains functions to send peerwire messages
  *
  * */
 

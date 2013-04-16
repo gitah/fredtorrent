@@ -4,7 +4,7 @@ int init_connection(std::string dst_ip, int dst_port) {
     if((sockfd = socket(PF_INET, SOCK_DGRAM,0)) == -1) {
         return NULL;
     }
-    
+
     //set socket to be reusable
     int yes = 1;
     if (setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
@@ -66,7 +66,7 @@ bool send_handshake(int sockfd, std::string peer_id, std::string info_hash) {
 // interested/uninterested
 void init_short_msg(uint8_t *msg, uint8_t msg_id) {
     // length prefix
-    *((uint32_t *)offset) =  ntonl(MSG_ID_SIZE);    
+    *((uint32_t *)offset) =  ntonl(MSG_ID_SIZE);
     offset += sizeof(uint32_t);
 
     // msg id
@@ -75,7 +75,7 @@ void init_short_msg(uint8_t *msg, uint8_t msg_id) {
 
 bool send_choke(int sockfd) {
     // choke: <len=0001><id=0>
-    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE; 
+    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE;
     uint8_t *msg[msg_size];
     init_short_msg(msg, CHOKE_MSG_ID);
 
@@ -89,7 +89,7 @@ bool send_choke(int sockfd) {
 
 bool send_unchoke(int sockfd) {
     // unchoke: <len=0001><id=1>
-    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE; 
+    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE;
     uint8_t *msg[msg_size];
     init_short_msg(msg, UNCHOKE_MSG_ID);
 
@@ -103,7 +103,7 @@ bool send_unchoke(int sockfd) {
 
 bool send_interested(int sockfd) {
     // interested: <len=0001><id=2>
-    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE; 
+    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE;
     uint8_t *msg[msg_size];
     init_short_msg(msg, INTERESTED_MSG_ID);
 
@@ -117,7 +117,7 @@ bool send_interested(int sockfd) {
 
 bool send_uninterested(int sockfd) {
     // uninterested: <len=0001><id=3>
-    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE; 
+    int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE;
     uint8_t *msg[msg_size];
     init_short_msg(msg, UNINTERESTED_MSG_ID);
 
@@ -144,12 +144,12 @@ bool send_request(int sockfd, uint32_t index, uint32_t begin) {
     // begin: integer specifying the zero-based byte offset within the piece
     // length: integer specifying the requested length.
     //      NOTE: length is always 2^14
-    uint32_t msg_size = LENGTH_PREFIX_SIZE + REQUEST_MSG_SIZE; 
+    uint32_t msg_size = LENGTH_PREFIX_SIZE + REQUEST_MSG_SIZE;
     uint8_t *msg[msg_size];
     uint8_t *offset = msg;
 
-    // MESSAGE LENGTH 
-    *((uint32_t *)offset) =  ntonl(REQUEST_MSG_SIZE);    
+    // MESSAGE LENGTH
+    *((uint32_t *)offset) =  ntonl(REQUEST_MSG_SIZE);
     offset += sizeof(uint32_t);
 
     // MSG ID
@@ -157,15 +157,15 @@ bool send_request(int sockfd, uint32_t index, uint32_t begin) {
     offset += 1;
 
     // PIECE INDEX
-    *((uint32_t *)offset) =  ntonl(index);    
+    *((uint32_t *)offset) =  ntonl(index);
     offset += sizeof(uint32_t);
 
     // BEGIN
-    *((uint32_t *)offset) =  ntonl(begin);    
+    *((uint32_t *)offset) =  ntonl(begin);
     offset += sizeof(uint32_t);
 
     // DATA LENGTH
-    *((uint32_t *)offset) =  ntonl(REQUEST_MSG_BLOCK_LEN);    
+    *((uint32_t *)offset) =  ntonl(REQUEST_MSG_BLOCK_LEN);
     offset += sizeof(uint32_t);
 
     // send message
@@ -186,8 +186,8 @@ bool send_piece(int sockfd, uint32_t index, uint32_t begin, char *data, size_t n
     uint8_t *msg[msg_size];
     uint8_t *offset = msg;
 
-    // MESSAGE LENGTH 
-    *((uint32_t *)offset) =  ntonl(9 + n);    
+    // MESSAGE LENGTH
+    *((uint32_t *)offset) =  ntonl(9 + n);
     offset += sizeof(uint32_t);
 
     // MSG ID
@@ -195,11 +195,11 @@ bool send_piece(int sockfd, uint32_t index, uint32_t begin, char *data, size_t n
     offset += 1;
 
     // PIECE INDEX
-    *((uint32_t *)offset) =  ntonl(index);    
+    *((uint32_t *)offset) =  ntonl(index);
     offset += sizeof(uint32_t);
 
     // BEGIN
-    *((uint32_t *)offset) =  ntonl(begin);    
+    *((uint32_t *)offset) =  ntonl(begin);
     offset += sizeof(uint32_t);
 
     // DATA LENGTH
