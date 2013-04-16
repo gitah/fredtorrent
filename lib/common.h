@@ -17,6 +17,7 @@
 #define TRACKER_PORT 80
 
 #define SHA1_LEN 20
+#define PEER_ID_LEN 20
 
 typedef uint32_t BT_ID;
 
