@@ -1,46 +1,74 @@
 fredtorrent
 ===========
-An implementation of the BitTorrent Protocol
+An implementation of the BitTorrent Protocol.
 
-It will implement the Peer-to-peer and Peer-to-tracker protocol. The goal is to
-have a commandline program that can succesfuly download Ubuntu via BitTorrent:
+It implements the Peer-Tracker and and Peerwire protocols. The program is
+written in C++ and runs on a Linux environment.
 
-    http://www.ubuntu.com/download/desktop/alternative-downloads
 
-# Steps
-1. Implement Peer-to-tracker protocol in library
-2. Implement Peer-to-peer protocol in library
-3. Create client program using library
+To compile everything do:
 
-# Design
+    make main
 
-(BTSession)
-    1. Read metainfo file via. (MetaInfoFile)
-        1.1 Use (Bencode) to parse
-
-    2. Use data from (MetaInfoFile) for (TrackerConnection)
-        2.1 Initialize request settings
-        2.2 get and store peer list
-
-    3. Connect to a few peers via. (PeerConnection)
-
-# TODO
-2. create Bencode class
-3. create MetaInfoFile class
-4. create BTSession class (top class encompassing everything)
-
-5. Finish TrackerConnection class
-5. Create Peer, PeerList classes
-5. Create BTFile, PieceManager classes
-    - which pieces I already have
-    - who has which piece
-    - frequency of pieces
-
-6. create PeerConnection class
-    - handshake, keep-alive, choke, unchoke, interested, uninterested
-    - have, request, piece
+However, this does not run yet (see TODO).
 
 # Dependencies
+libboost
 libcurl
 
-    curl-config --libs
+
+# Files
+
+common.h
+    - contains functions and contants used globally
+
+bencode.h
+    - contains functions to parse bencoded strings
+
+metainfo.h
+    - contains functions to parse the metainfo file
+
+peer.h
+    - classes to represent peers and to manage them
+
+piece.h
+    - classes to represent pieces of the file
+
+tracker.h
+    - functions to announce to the tracker
+
+peerwire.h
+    - functions to send messages in the peerwire protocol
+
+btsession.h
+    - top level file 
+    - takes metainfo filepath as argument
+    - parse metainfo file
+    - announce to tracker
+    - opens connections with peers and listens for new connections
+    - receives messages and handles them
+
+
+# TODO: 
+
+Currently, the fredtorrent does not work. It can parse the metainfo file and
+announce to the tracker. I have also implemented methods to send the peerwire
+protocol messages and a basic framework for handling new and existing
+connections from the peers.
+
+However, I still need to "pipe" everything together and handle the each of the
+messages properly. I also need to test it on an actual tracker with actual
+peers.
+
+Here are some of the significant things to finish:
+1. close open connections to peers when timed out
+    - open conn. to new peers to replace old ones
+
+2. send request messages to peer when unchoked and interested
+
+3. function to write pieces recieved to disk for piece msg
+
+4. functions to respond to other request msg
+    - read pieces from disk and send piece msg
+
+I am unsure whether or not to continue with this project, maybe.

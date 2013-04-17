@@ -39,7 +39,6 @@ class MetaInfo {
 public:
     MetaInfo(std::string path);
 
-
     // returns whether or not metainfo file was successfully parsed
     bool valid();
 

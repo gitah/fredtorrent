@@ -15,6 +15,7 @@ class TrackerConnection;
 // contains state information regarding a client and its tracker
 class TrackerConnection {
 public:
+    TrackerConnection();
     TrackerConnection(std::string tracker_url, int port);
 
     // announces client to tracker

@@ -171,6 +171,7 @@ bool send_have(int sockfd, uint32_t index) {
     // have: <len=0005><id=4><piece index>
     int msg_size = LENGTH_PREFIX_SIZE + HAVE_MSG_SIZE;
     uint8_t msg[msg_size];
+    uint8_t *offset = msg;
 
     // MESSAGE LENGTH
     *((uint32_t *)offset) =  htonl(HAVE_MSG_SIZE);
@@ -196,6 +197,7 @@ bool send_bitfield(int sockfd, uint8_t *bitfield, size_t bitfield_len) {
     //bitfield: <len=0001+X><id=5><bitfield>
     int msg_size = LENGTH_PREFIX_SIZE + MSG_ID_SIZE + bitfield_len;
     uint8_t msg[msg_size];
+    uint8_t *offset = msg;
 
     // MESSAGE LENGTH
     *((uint32_t *)offset) =  htonl(MSG_ID_SIZE + bitfield_len);

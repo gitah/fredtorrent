@@ -15,24 +15,25 @@
 /* Keeps track the pieces we have and need */
 class PieceManager {
 public:
+    PieceManager();
     PieceManager(int num_pieces, int piece_size);
 
     // operations on client pieces
-    void update_piece(int have_piece);
-    void update_pieces(boost::dynamic_bitset bitfield);
+    void update_piece(int index, bool have_piece);
+    void update_pieces(boost::dynamic_bitset<> bitfield);
     unsigned long pieces_to_bitfield();
 
     // operations on peer pieces
     void handle_have(std::string peer_id, int piece_id);
-    void handle_bitfield(std::string peer_id, unsigned long bitfield, size_t n);
+    void handle_bitfield(std::string peer_id, unsigned long bitfield);
 
-    boost::dynamic_bitset missing_pieces(std::string peer_id);
+    boost::dynamic_bitset<> missing_pieces(std::string peer_id);
 
 
 private:
     int num_pieces;
     int piece_size;
-    boost::dynamic_bitset my_pieces;
-    std::map<string, boost::dynamic_bitset> peer_pieces;
+    boost::dynamic_bitset<> my_pieces;
+    std::map< std::string, boost::dynamic_bitset<> > peer_pieces;
 };
 #endif

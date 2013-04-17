@@ -11,6 +11,8 @@ size_t write_to_string(void *ptr, size_t size, size_t nmemb, std::string stream)
 }
 
 /* === TrackerConnection === */
+TrackerConnection::TrackerConnection() : mTrackerURL(""), mPort(0) {}
+
 TrackerConnection::TrackerConnection(string tracker_url, int port) : mLastSent(0), mInterval(0), mTrackerId("") {
     mTrackerURL = tracker_url;
     mPort = port;

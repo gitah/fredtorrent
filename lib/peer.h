@@ -15,13 +15,10 @@
 // Represents a Peer
 class Peer {
 public:
-    Peer(string pid, string ip, int port);
+    Peer();
+    Peer(std::string pid, std::string ip, int port);
     static Peer parse(std::map<std::string, BencodeTokenPtr> peer_dict);
 
-    // creates the piece array to keep track of which piece peer has
-    void init_piece_array(num_pieces);
-
-private:
     std::string peer_id;
 
     // peer's IP address either IPv6 (hexed) or IPv4 (dotted quad) or DNS name (string)
@@ -41,16 +38,15 @@ class PeerManager {
 public:
     PeerManager();
 
-    void add_peer(std::string peer_id, std::string ip, int port);
+    void add_peer(int conn, std::string peer_id, std::string ip, int port);
 
-    void handle_choke(std::string peer_id);
-    void handle_unchoke(std::string peer_id);
+    void handle_choke(int conn);
+    void handle_unchoke(int conn);
 
-    void handle_interested(std::string peer_id);
-    void handle_uninterested(std::string peer_id);
+    void handle_interested(int conn);
+    void handle_uninterested(int conn);
 
     std::map<int, Peer> mConnectedPeers;
-    std::vector<std::string> peers;
 };
 
 #endif
